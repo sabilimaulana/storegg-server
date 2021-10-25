@@ -15,7 +15,7 @@ module.exports = {
       req.flash("alertMessage", `${error?.message}`);
       req.flash("alertStatus", "danger");
 
-      res.redirect("/category");
+      res.redirect("/nominal");
       console.log(error);
     }
   },
@@ -27,7 +27,7 @@ module.exports = {
       req.flash("alertMessage", `${error?.message}`);
       req.flash("alertStatus", "danger");
 
-      res.redirect("/category");
+      res.redirect("/nominal");
     }
   },
   actionCreate: async (req, res) => {
@@ -46,7 +46,7 @@ module.exports = {
       req.flash("alertMessage", `${error?.message}`);
       req.flash("alertStatus", "danger");
 
-      res.redirect("/category");
+      res.redirect("/nominal");
     }
   },
   // viewEdit: async (req, res) => {
