@@ -7,8 +7,9 @@ const methodOverride = require("method-override");
 const session = require("express-session");
 const flash = require("connect-flash");
 
-var categoryRouter = require("./app/category/router");
-var dashboardRouter = require("./app/dashboard/router");
+const dashboardRouter = require("./app/dashboard/router");
+const categoryRouter = require("./app/category/router");
+const nominalRouter = require("./app/nominal/router");
 
 var app = express();
 
@@ -38,6 +39,7 @@ app.use(
 
 app.use("/", dashboardRouter);
 app.use("/category", categoryRouter);
+app.use("/nominal", nominalRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
