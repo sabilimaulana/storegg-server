@@ -53,4 +53,15 @@ module.exports = {
       console.log(error);
     }
   },
+  actionDelete: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      await Category.findOneAndRemove({ _id: id });
+
+      res.redirect("/category");
+    } catch (error) {
+      console.log(error);
+    }
+  },
 };
