@@ -49,41 +49,44 @@ module.exports = {
       res.redirect("/nominal");
     }
   },
-  // viewEdit: async (req, res) => {
-  //   try {
-  //     const { id } = req.params;
+  viewEdit: async (req, res) => {
+    try {
+      const { id } = req.params;
 
-  //     const category = await Category.findOne({ _id: id });
-  //     res.render("admin/category/edit", {
-  //       category,
-  //     });
-  //   } catch (error) {
-  //     console.log(error);
-  //     req.flash("alertMessage", `${error?.message}`);
-  //     req.flash("alertStatus", "danger");
+      const nominal = await Nominal.findOne({ _id: id });
+      res.render("admin/nominal/edit", {
+        nominal,
+      });
+    } catch (error) {
+      console.log(error);
+      req.flash("alertMessage", `${error?.message}`);
+      req.flash("alertStatus", "danger");
 
-  //     res.redirect("/category");
-  //   }
-  // },
-  // actionEdit: async (req, res) => {
-  //   try {
-  //     const { id } = req.params;
-  //     const { name } = req.body;
+      res.redirect("/nominal");
+    }
+  },
+  actionEdit: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { coinName, coinQuantity, price } = req.body;
 
-  //     await Category.findOneAndUpdate({ _id: id }, { name });
+      await Nominal.findOneAndUpdate(
+        { _id: id },
+        { coinName, coinQuantity, price }
+      );
 
-  //     req.flash("alertMessage", "Berhasil ubah kategori");
-  //     req.flash("alertStatus", "success");
+      req.flash("alertMessage", "Berhasil ubah nominal");
+      req.flash("alertStatus", "success");
 
-  //     res.redirect("/category");
-  //   } catch (error) {
-  //     console.log(error);
-  //     req.flash("alertMessage", `${error?.message}`);
-  //     req.flash("alertStatus", "danger");
+      res.redirect("/nominal");
+    } catch (error) {
+      console.log(error);
+      req.flash("alertMessage", `${error?.message}`);
+      req.flash("alertStatus", "danger");
 
-  //     res.redirect("/category");
-  //   }
-  // },
+      res.redirect("/nominal");
+    }
+  },
   // actionDelete: async (req, res) => {
   //   try {
   //     const { id } = req.params;
