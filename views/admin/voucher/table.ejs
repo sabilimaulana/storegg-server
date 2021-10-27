@@ -23,18 +23,22 @@
         <% }) %>
       </td>
       <td>
-        <% if(voucher?.status == 'Y'){ %>
+        <% if(voucher[i]?.status == 'Y'){ %>
         <span class="badge badge-success"> Aktif </span>
         <% } else { %>
         <span class="badge badge-danger"> Nonaktif </span>
         <% } %>
       </td>
       <td>
-        <form action="POST" style="display: inline-block">
-          <button class="btn btn-primary btn-sm">
+        <form
+          action="/voucher/status/<%= voucher[i]._id %>?_method=PUT"
+          method="POST"
+          style="display: inline-block"
+        >
+          <button class="btn btn-primary btn-sm" type="submit">
             <i class="fas fa-folder"></i>
-            <% if(voucher?.status == 'Y'){ %> Matikan <% } else { %> Hidupkan <%
-            } %>
+            <% if(voucher[i]?.status == 'Y'){ %> Matikan <% } else { %> Hidupkan
+            <% } %>
           </button>
         </form>
         <form
