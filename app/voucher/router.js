@@ -9,7 +9,7 @@ const {
   actionCreate,
   viewEdit,
   actionEdit,
-  // actionDelete,
+  actionDelete,
 } = require("./controller");
 
 router.get("/", index);
@@ -25,6 +25,6 @@ router.put(
   multer({ dest: os.tmpdir() }).single("image"),
   actionEdit
 );
-// router.delete("/delete/:id", actionDelete);
+router.delete("/delete/:id", actionDelete);
 
 module.exports = router;

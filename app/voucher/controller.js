@@ -177,22 +177,26 @@ module.exports = {
       res.redirect("/voucher");
     }
   },
-  // actionDelete: async (req, res) => {
-  //   try {
-  //     const { id } = req.params;
+  actionDelete: async (req, res) => {
+    try {
+      const { id } = req.params;
 
-  //     await Nominal.findOneAndRemove({ _id: id });
+      const voucher = await Voucher.findOneAndRemove({ _id: id });
+      let currentImage = `${config.rootPath}/public/uploads/${voucher?.thumbnail}`;
+      if (fs.existsSync(currentImage)) {
+        fs.unlinkSync(currentImage);
+      }
 
-  //     req.flash("alertMessage", "Berhasil hapus nominal");
-  //     req.flash("alertStatus", "success");
+      req.flash("alertMessage", "Berhasil hapus voucher");
+      req.flash("alertStatus", "success");
 
-  //     res.redirect("/nominal");
-  //   } catch (error) {
-  //     console.log(error);
-  //     req.flash("alertMessage", `${error?.message}`);
-  //     req.flash("alertStatus", "danger");
+      res.redirect("/voucher");
+    } catch (error) {
+      console.log(error);
+      req.flash("alertMessage", `${error?.message}`);
+      req.flash("alertStatus", "danger");
 
-  //     res.redirect("/nominal");
-  //   }
-  // },
+      res.redirect("/voucher");
+    }
+  },
 };
