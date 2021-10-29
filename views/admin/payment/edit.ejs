@@ -10,13 +10,13 @@
         <div class="container-fluid">
           <div class="row mb-2">
             <div class="col-sm-6">
-              <h1>Voucher</h1>
+              <h1>Jenis Pembayaran</h1>
             </div>
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-right">
                 <li class="breadcrumb-item"><a href="/">Home</a></li>
                 <li class="breadcrumb-item">
-                  <a href="/voucher"> Voucher</a>
+                  <a href="/payment">Jenis Pembayaran</a>
                 </li>
                 <li class="breadcrumb-item active">Ubah</li>
               </ol>
@@ -33,88 +33,48 @@
             <div class="col-12">
               <div class="card card-primary">
                 <div class="card-header">
-                  <h3 class="card-title">
-                    Form Ubah Voucher "<%= voucher?.name %>"
-                  </h3>
+                  <h3 class="card-title">Form Ubah Jenis Pembayaran</h3>
                 </div>
                 <!-- /.card-header -->
                 <!-- form start -->
-                <form
-                  action="/voucher/edit/<%= voucher?._id %>?_method=PUT"
-                  method="POST"
-                  enctype="multipart/form-data"
-                >
+                <form action="/payment/edit/<%= payment?._id %>?_method=PUT" method="POST">
                   <div class="card-body">
                     <div class="form-group">
-                      <label for="name">Nama Game</label>
+                      <label for="type">Tipe</label>
                       <input
                         type="text"
                         class="form-control"
-                        id="name"
-                        name="name"
-                        value="<%= voucher?.name %>"
-                        placeholder="Masukkan nama game"
+                        id="type"
+                        name="type"
+                        placeholder="Masukkan type pembayaran"
                         required
+                        value="<%= payment?.type %>"
                       />
                     </div>
-                    <div class="form-group">
-                      <label>Nama Kategori</label>
-                      <select
-                        class="form-control select2"
-                        style="width: 100%"
-                        name="category"
-                      >
-                        <option selected="selected">Pilih kategori</option>
-                        <% category.forEach(category=>{ %>
-                        <option value="<%= category._id %>"
-                          <% if(category?._id?.toString() === voucher?.category?._id?.toString()){ %>   
-                            selected="selected"
-                          <% } %> 
-                          >
-                          <%= category.name %>
-                        </option>
-                        <% }) %>
-                      </select>
-                    </div>
-
-                    <div class="form-group">
-                      <label>Nominal</label>
+                   <div class="form-group">
+                      <label>Bank</label>
                       <div class="select2-purple">
                         <select
                           class="form-control select2"
                           multiple="multiple"
-                          data-placeholder="Pilih nominal"
+                          data-placeholder="Pilih bank"
                           style="width: 100%"
-                          name="nominals"
+                          name="banks"
                         >
-                          <% nominal.forEach(nominal=>{ %>
-                          <option value="<%= nominal._id %>"
-                            <% voucher?.nominals?.forEach(voucherNominal=>{ %>   
-                              <% if(voucherNominal?._id?.toString() === nominal?._id?.toString()){ %> 
+                          <% banks.forEach(bank=>{ %>
+                          <option value="<%= bank._id %>"
+                            <% payment?.banks?.forEach(paymentBank=>{ %>   
+                              <% if(paymentBank?._id?.toString() === bank?._id?.toString()){ %> 
                                 selected="selected"
                               <% } %> 
                             <% }) %> 
                           >
-                            <%= nominal?.coinName %> <%= nominal?.coinQuantity %>
+                            <%= bank?.name %>-<%= bank?.nameBank %>-<%= bank?.noRekening %> 
                           </option>
                           <% }) %>
                         </select>
                       </div>
                     </div>
-
-                    <div class="form-group">
-                      <label for="image">Gambar</label>
-                      <input
-                        type="file"
-                        class="form-control"
-                        id="image"
-                        name="image"
-                        placeholder="Masukkan gambar"
-                      />
-                      <br />
-                      <img src="http://localhost:3000/uploads/<%= voucher?.thumbnail %>" id="preview" width='300px'/>
-                    </div>
-                  </div>
                   <!-- /.card-body -->
 
                   <div class="card-footer">
