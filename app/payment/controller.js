@@ -9,7 +9,7 @@ module.exports = {
 
       const alert = { message: alertMessage, status: alertStatus };
 
-      const payment = await Payment.find();
+      const payment = await Payment.find().populate("banks");
 
       res.render("admin/payment/view_payment", { payment, alert });
     } catch (error) {
