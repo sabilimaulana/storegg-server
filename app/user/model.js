@@ -1,20 +1,35 @@
-const Payment = require("./model");
+const mongoose = require("mongoose");
 
-module.exports = {
-  viewSignin: async (req, res) => {
-    try {
-      const alertMessage = req.flash("alertMessage");
-      const alertStatus = req.flash("alertStatus");
-
-      const alert = { message: alertMessage, status: alertStatus };
-
-      res.render("admin/payment/view_signin", { alert });
-    } catch (error) {
-      req.flash("alertMessage", `${error?.message}`);
-      req.flash("alertStatus", "danger");
-
-      res.redirect("/payment");
-      console.log(error);
-    }
+let userSchema = mongoose.Schema(
+  {
+    email: {
+      type: String,
+      require: [true, "email harus diisi"],
+    },
+    name: {
+      type: String,
+      require: [true, "name harus diisi"],
+    },
+    password: {
+      type: String,
+      require: [true, "kata sandi harus diisi"],
+    },
+    status: {
+      type: String,
+      enum: ["admin", "user"],
+      default: "admin",
+    },
+    status: {
+      type: String,
+      enum: ["Y", "N"],
+      default: "Y",
+    },
+    phoneNumber: {
+      type: String,
+      require: [true, "nomor telpon harus diisi"],
+    },
   },
-};
+  { timestamps: true }
+);
+
+module.exports = mongoose.model("User", userSchema);

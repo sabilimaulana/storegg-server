@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 const multer = require("multer");
 const os = require("os");
+const { isLoginAdmin } = require("../middlewares/auth");
 
 const {
   index,
@@ -13,6 +14,7 @@ const {
   actionStatus,
 } = require("./controller");
 
+router.use(isLoginAdmin);
 router.get("/", index);
 router.get("/create", viewCreate);
 router.post(

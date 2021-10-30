@@ -1,4 +1,5 @@
 var express = require("express");
+const { isLoginAdmin } = require("../middlewares/auth");
 var router = express.Router();
 
 const {
@@ -11,6 +12,7 @@ const {
   actionStatus,
 } = require("./controller");
 
+router.use(isLoginAdmin);
 router.get("/", index);
 router.get("/create", viewCreate);
 router.post("/create", actionCreate);
