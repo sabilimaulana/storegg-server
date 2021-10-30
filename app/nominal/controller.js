@@ -10,23 +10,27 @@ module.exports = {
 
       const nominal = await Nominal.find();
 
-      res.render("admin/nominal/view_nominal", { nominal, alert });
+      res.render("admin/nominal/view_nominal", {
+        nominal,
+        alert,
+        title: "Nominal",
+        name: req.session.user.name,
+      });
     } catch (error) {
       req.flash("alertMessage", `${error?.message}`);
       req.flash("alertStatus", "danger");
-
       res.redirect("/nominal");
-      console.log(error);
     }
   },
   viewCreate: async (req, res) => {
     try {
-      res.render("admin/nominal/create");
+      res.render("admin/nominal/create", {
+        title: "Tambah Nominal",
+        name: req.session.user.name,
+      });
     } catch (error) {
-      console.log(error);
       req.flash("alertMessage", `${error?.message}`);
       req.flash("alertStatus", "danger");
-
       res.redirect("/nominal");
     }
   },
@@ -56,6 +60,8 @@ module.exports = {
       const nominal = await Nominal.findOne({ _id: id });
       res.render("admin/nominal/edit", {
         nominal,
+        title: "Edit Nominal",
+        name: req.session.user.name,
       });
     } catch (error) {
       console.log(error);

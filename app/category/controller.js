@@ -10,23 +10,27 @@ module.exports = {
 
       const category = await Category.find();
 
-      res.render("admin/category/view_category", { category, alert });
+      res.render("admin/category/view_category", {
+        category,
+        alert,
+        title: "Kategori",
+        name: req.session.user.name,
+      });
     } catch (error) {
       req.flash("alertMessage", `${error?.message}`);
       req.flash("alertStatus", "danger");
-
       res.redirect("/category");
-      console.log(error);
     }
   },
   viewCreate: async (req, res) => {
     try {
-      res.render("admin/category/create");
+      res.render("admin/category/create", {
+        title: "Tambah Kategori",
+        name: req.session.user.name,
+      });
     } catch (error) {
-      console.log(error);
       req.flash("alertMessage", `${error?.message}`);
       req.flash("alertStatus", "danger");
-
       res.redirect("/category");
     }
   },
@@ -39,13 +43,10 @@ module.exports = {
 
       req.flash("alertMessage", "Berhasil tambah kategori");
       req.flash("alertStatus", "success");
-
       res.redirect("/category");
     } catch (error) {
-      console.log(error);
       req.flash("alertMessage", `${error?.message}`);
       req.flash("alertStatus", "danger");
-
       res.redirect("/category");
     }
   },
@@ -56,12 +57,12 @@ module.exports = {
       const category = await Category.findOne({ _id: id });
       res.render("admin/category/edit", {
         category,
+        title: "Edit Kategori",
+        name: req.session.user.name,
       });
     } catch (error) {
-      console.log(error);
       req.flash("alertMessage", `${error?.message}`);
       req.flash("alertStatus", "danger");
-
       res.redirect("/category");
     }
   },
@@ -74,13 +75,10 @@ module.exports = {
 
       req.flash("alertMessage", "Berhasil ubah kategori");
       req.flash("alertStatus", "success");
-
       res.redirect("/category");
     } catch (error) {
-      console.log(error);
       req.flash("alertMessage", `${error?.message}`);
       req.flash("alertStatus", "danger");
-
       res.redirect("/category");
     }
   },
@@ -92,13 +90,10 @@ module.exports = {
 
       req.flash("alertMessage", "Berhasil hapus kategori");
       req.flash("alertStatus", "success");
-
       res.redirect("/category");
     } catch (error) {
-      console.log(error);
       req.flash("alertMessage", `${error?.message}`);
       req.flash("alertStatus", "danger");
-
       res.redirect("/category");
     }
   },

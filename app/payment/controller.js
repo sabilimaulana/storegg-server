@@ -11,25 +11,30 @@ module.exports = {
 
       const payment = await Payment.find().populate("banks");
 
-      res.render("admin/payment/view_payment", { payment, alert });
+      res.render("admin/payment/view_payment", {
+        payment,
+        alert,
+        title: "Jenis Pembayaran",
+        name: req.session.user.name,
+      });
     } catch (error) {
       req.flash("alertMessage", `${error?.message}`);
       req.flash("alertStatus", "danger");
-
       res.redirect("/payment");
-      console.log(error);
     }
   },
   viewCreate: async (req, res) => {
     try {
       const banks = await Bank.find();
 
-      res.render("admin/payment/create", { banks });
+      res.render("admin/payment/create", {
+        banks,
+        title: "Tambah Jenis Pembayaran",
+        name: req.session.user.name,
+      });
     } catch (error) {
-      console.log(error);
       req.flash("alertMessage", `${error?.message}`);
       req.flash("alertStatus", "danger");
-
       res.redirect("/payment");
     }
   },
@@ -42,13 +47,10 @@ module.exports = {
 
       req.flash("alertMessage", "Berhasil tambah payment");
       req.flash("alertStatus", "success");
-
       res.redirect("/payment");
     } catch (error) {
-      console.log(error);
       req.flash("alertMessage", `${error?.message}`);
       req.flash("alertStatus", "danger");
-
       res.redirect("/payment");
     }
   },
@@ -62,12 +64,12 @@ module.exports = {
       res.render("admin/payment/edit", {
         payment,
         banks,
+        title: "Edit Jenis Pembayaran",
+        name: req.session.user.name,
       });
     } catch (error) {
-      console.log(error);
       req.flash("alertMessage", `${error?.message}`);
       req.flash("alertStatus", "danger");
-
       res.redirect("/payment");
     }
   },

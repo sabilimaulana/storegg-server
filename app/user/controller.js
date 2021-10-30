@@ -66,4 +66,8 @@ module.exports = {
       res.redirect("/");
     }
   },
+  actionLogout: async (req, res) => {
+    req.session.destroy();
+    res.redirect("/");
+  },
 };
