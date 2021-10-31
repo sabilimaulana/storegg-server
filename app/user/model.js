@@ -14,7 +14,7 @@ let userSchema = mongoose.Schema(
       type: String,
       require: [true, "kata sandi harus diisi"],
     },
-    status: {
+    role: {
       type: String,
       enum: ["admin", "user"],
       default: "admin",
