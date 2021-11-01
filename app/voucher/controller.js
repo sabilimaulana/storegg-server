@@ -73,7 +73,7 @@ module.exports = {
 
         src.on("end", async () => {
           try {
-            const voucher = Voucher({
+            const voucher = new Voucher({
               name,
               category,
               nominals,
