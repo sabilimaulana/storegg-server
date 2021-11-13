@@ -161,4 +161,21 @@ module.exports = {
         .json({ message: error.message || "Internal Server Error" });
     }
   },
+  historyDetail: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const history = await Transaction.findOne({ _id: id });
+
+      if (!history) {
+        return res.status(404).json({ message: "History tidak ditemukan" });
+      }
+
+      res.status(201).json({ data: history });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: error.message || "Internal Server Error" });
+    }
+  },
 };
