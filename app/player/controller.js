@@ -5,6 +5,7 @@ const Nominal = require("../nominal/model");
 const Payment = require("../payment/model");
 const Bank = require("../bank/model");
 const Transaction = require("../transaction/model");
+const e = require("connect-flash");
 
 module.exports = {
   landingPage: async (req, res) => {
@@ -172,6 +173,43 @@ module.exports = {
       }
 
       res.status(201).json({ data: history });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: error.message || "Internal Server Error" });
+    }
+  },
+  dashboard: async (req, res) => {
+    try {
+      const count = await Transaction.aggregate([
+        {
+          $match: { player: req.player._id },
+        },
+        {
+          $group: {
+            _id: "$category",
+            value: { $sum: "$value" },
+          },
+        },
+      ]);
+
+      const category = await Categpry.find();
+
+      category.forEach((element) => {
+        count.forEach((data) => {
+          if (data._id.toString() === element._id.toString()) {
+            data.name = element.name;
+          }
+        });
+      });
+
+      const history = await Transaction.find({
+        player: req.player._id,
+      })
+        .populate("category")
+        .sort({ updatedAt: -1 });
+
+      res.status(200).json({ data: history, count });
     } catch (error) {
       res
         .status(500)
