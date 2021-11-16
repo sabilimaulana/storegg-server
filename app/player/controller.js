@@ -5,7 +5,9 @@ const Nominal = require("../nominal/model");
 const Payment = require("../payment/model");
 const Bank = require("../bank/model");
 const Transaction = require("../transaction/model");
-const e = require("connect-flash");
+const path = require("path");
+const fs = require("fs");
+const config = require("../../config");
 
 module.exports = {
   landingPage: async (req, res) => {
@@ -229,6 +231,87 @@ module.exports = {
 
       res.status(200).json({ data: player });
     } catch (error) {
+      res
+        .status(500)
+        .json({ message: error.message || "Internal Server Error" });
+    }
+  },
+  editProfile: async (req, res) => {
+    try {
+      const { name = "", phoneNumber = "" } = req.body;
+
+      const payload = {};
+
+      if (name.length) payload.name = name;
+      if (phoneNumber.length) payload.phoneNumber = phoneNumber;
+
+      if (req.file) {
+        let tmp_path = req.file.path;
+        let originalExt =
+          req.file.originalname.split(".")[
+            req.file.originalname.split(".").length - 1
+          ];
+        let filename = req.file.filename + "." + originalExt;
+        let target_path = path.resolve(
+          config.rootPath,
+          `public/uploads/${filename}`
+        );
+
+        const src = fs.createReadStream(tmp_path);
+        const dest = fs.createWriteStream(target_path);
+
+        src.pipe(dest);
+
+        src.on("end", async () => {
+          const player = await Player.findOne({ _id: req.player._id });
+
+          let currentImage = `${config.rootPath}/public/uploads/${player?.avatar}`;
+          if (fs.existsSync(currentImage)) {
+            fs.unlinkSync(currentImage);
+          }
+
+          await Player.findOneAndUpdate(
+            { _id: player._id },
+            { ...payload, avatar: filename }
+          );
+
+          res.status(201).json({
+            data: {
+              id: player.id,
+              name: player.name,
+              phoneNumber: player.phoneNumber,
+              avatar: filename,
+            },
+          });
+        });
+        src.on("err", async () => {});
+      } else {
+        const player = await Player.findByIdAndUpdate(
+          {
+            _id: req.player._id,
+          },
+          payload,
+          { new: true, runValidators: true }
+        );
+
+        res.status(201).json({
+          data: {
+            id: player.id,
+            name: player.name,
+            phoneNumber: player.phoneNumber,
+            avatar: player.avatar,
+          },
+        });
+      }
+    } catch (error) {
+      if (err && err.name === "ValidationErro") {
+        res.status(422).json({
+          error: 1,
+          message: error.message || "Internal Server Error",
+          fields: err?.errors,
+        });
+      }
+
       res
         .status(500)
         .json({ message: error.message || "Internal Server Error" });
