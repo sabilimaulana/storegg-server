@@ -27,7 +27,7 @@ module.exports = {
     try {
       const { id } = req.params;
 
-      const voucher = await Voucher.findOne({ _id: id })
+      let voucher = await Voucher.findOne({ _id: id })
         .populate("category")
         .populate("nominals")
         .populate("user", "_id name phoneNumber");
@@ -36,6 +36,8 @@ module.exports = {
         res.status(404).json({ message: "Voucher game tidak ditemukan!" });
         return;
       }
+
+      voucher._doc.payment = await Payment.find();
 
       res.status(200).json({ data: voucher });
     } catch (error) {
