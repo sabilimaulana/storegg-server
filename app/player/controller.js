@@ -27,7 +27,7 @@ module.exports = {
     try {
       const { id } = req.params;
 
-      let voucher = await Voucher.findOne({ _id: id })
+      const voucher = await Voucher.findOne({ _id: id })
         .populate("category")
         .populate("nominals")
         .populate("user", "_id name phoneNumber");
@@ -37,9 +37,12 @@ module.exports = {
         return;
       }
 
-      voucher._doc.payment = await Payment.find();
+      const data = {
+        detail: voucher,
+        payment: await Payment.find(),
+      };
 
-      res.status(200).json({ data: voucher });
+      res.status(200).json({ data });
     } catch (error) {
       res
         .status(500)
