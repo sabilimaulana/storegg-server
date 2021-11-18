@@ -39,7 +39,7 @@ module.exports = {
 
       const data = {
         detail: voucher,
-        payment: await Payment.find(),
+        payment: await Payment.find().populate("banks"),
       };
 
       res.status(200).json({ data });
