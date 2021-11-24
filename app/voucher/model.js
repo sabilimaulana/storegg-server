@@ -14,6 +14,9 @@ let voucherSchema = mongoose.Schema(
     thumbnail: {
       type: String,
     },
+    thumbnailPublicId: {
+      type: String,
+    },
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",

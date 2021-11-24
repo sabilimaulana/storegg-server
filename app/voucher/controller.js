@@ -1,9 +1,7 @@
 const Voucher = require("./model");
 const Categpry = require("../category/model");
 const Nominal = require("../nominal/model");
-const path = require("path");
-const fs = require("fs");
-const config = require("../../config");
+const cloudinary = require("../utils/cloudinary");
 
 module.exports = {
   index: async (req, res) => {
@@ -55,36 +53,17 @@ module.exports = {
       const { name, category, nominals } = req.body;
 
       if (req.file) {
-        let tmp_path = req.file.path;
-        let originalExt =
-          req.file.originalname.split(".")[
-            req.file.originalname.split(".").length - 1
-          ];
-        let filename = req.file.filename + "." + originalExt;
-        let target_path = path.resolve(
-          config.rootPath,
-          `public/uploads/${filename}`
-        );
+        const cloudinaryRes = await cloudinary.uploader.upload(req.file.path);
 
-        const src = fs.createReadStream(tmp_path);
-        const dest = fs.createWriteStream(target_path);
-
-        src.pipe(dest);
-
-        src.on("end", async () => {
-          try {
-            const voucher = new Voucher({
-              name,
-              category,
-              nominals,
-              thumbnail: filename,
-            });
-
-            await voucher.save();
-          } catch (error) {
-            console.log(error);
-          }
+        const voucher = new Voucher({
+          name,
+          category,
+          nominals,
+          thumbnail: cloudinaryRes.secure_url,
+          thumbnailPublicId: cloudinaryRes.public_id,
         });
+
+        await voucher.save();
       } else {
         const voucher = Voucher({
           name,
@@ -136,39 +115,24 @@ module.exports = {
       const { name, category, nominals } = req.body;
 
       if (req.file) {
-        let tmp_path = req.file.path;
-        let originalExt =
-          req.file.originalname.split(".")[
-            req.file.originalname.split(".").length - 1
-          ];
-        let filename = req.file.filename + "." + originalExt;
-        let target_path = path.resolve(
-          config.rootPath,
-          `public/uploads/${filename}`
-        );
+        const voucher = await Voucher.findOne({ _id: id });
 
-        const src = fs.createReadStream(tmp_path);
-        const dest = fs.createWriteStream(target_path);
+        if (voucher.thumbnailPublicId) {
+          await cloudinary.uploader.destroy(voucher.thumbnailPublicId);
+        }
 
-        src.pipe(dest);
+        const cloudinaryRes = await cloudinary.uploader.upload(req.file.path);
 
-        src.on("end", async () => {
-          try {
-            const voucher = await Voucher.findOne({ _id: id });
-
-            let currentImage = `${config.rootPath}/public/uploads/${voucher?.thumbnail}`;
-            if (fs.existsSync(currentImage)) {
-              fs.unlinkSync(currentImage);
-            }
-
-            await Voucher.findOneAndUpdate(
-              { _id: id },
-              { name, category, nominals, thumbnail: filename }
-            );
-          } catch (error) {
-            console.log(error);
+        await Voucher.findOneAndUpdate(
+          { _id: id },
+          {
+            name,
+            category,
+            nominals,
+            thumbnail: cloudinaryRes.secure_url,
+            thumbnailPublicId: cloudinaryRes.public_id,
           }
-        });
+        );
       } else {
         await Voucher.findOneAndUpdate(
           { _id: id },
@@ -193,9 +157,8 @@ module.exports = {
       const { id } = req.params;
 
       const voucher = await Voucher.findOneAndRemove({ _id: id });
-      let currentImage = `${config.rootPath}/public/uploads/${voucher?.thumbnail}`;
-      if (fs.existsSync(currentImage)) {
-        fs.unlinkSync(currentImage);
+      if (voucher.thumbnailPublicId) {
+        await cloudinary.uploader.destroy(voucher.thumbnailPublicId);
       }
 
       req.flash("alertMessage", "Berhasil hapus voucher");

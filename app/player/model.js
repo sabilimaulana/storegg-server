@@ -34,6 +34,9 @@ let playerSchema = mongoose.Schema(
     avatar: {
       type: String,
     },
+    avatarPublicId: {
+      type: String,
+    },
     fileName: {
       type: String,
     },

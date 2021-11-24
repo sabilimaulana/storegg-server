@@ -5,9 +5,7 @@ const Nominal = require("../nominal/model");
 const Payment = require("../payment/model");
 const Bank = require("../bank/model");
 const Transaction = require("../transaction/model");
-const path = require("path");
-const fs = require("fs");
-const config = require("../../config");
+const cloudinary = require("../utils/cloudinary");
 
 module.exports = {
   landingPage: async (req, res) => {
@@ -250,46 +248,40 @@ module.exports = {
       if (name.length) payload.name = name;
       if (phoneNumber.length) payload.phoneNumber = phoneNumber;
 
+      const oldPlayer = await Player.findOne({ _id: req.player._id });
+      if (!oldPlayer) {
+        return res.status(404).json({
+          error: 1,
+          message: "Player tidak ditemukan",
+        });
+      }
+
       if (req.file) {
-        let tmp_path = req.file.path;
-        let originalExt =
-          req.file.originalname.split(".")[
-            req.file.originalname.split(".").length - 1
-          ];
-        let filename = req.file.filename + "." + originalExt;
-        let target_path = path.resolve(
-          config.rootPath,
-          `public/uploads/${filename}`
+        if (oldPlayer.avatarPublicId) {
+          await cloudinary.uploader.destroy(oldPlayer.avatarPublicId);
+        }
+
+        const cloudinaryRes = await cloudinary.uploader.upload(req.file.path);
+
+        await Player.findOneAndUpdate(
+          { _id: oldPlayer._id },
+          {
+            ...payload,
+            avatar: cloudinaryRes.secure_url,
+            avatarPublicId: cloudinaryRes.public_id,
+          }
         );
 
-        const src = fs.createReadStream(tmp_path);
-        const dest = fs.createWriteStream(target_path);
+        const player = await Player.findOne({ _id: req.player._id });
 
-        src.pipe(dest);
-
-        src.on("end", async () => {
-          const player = await Player.findOne({ _id: req.player._id });
-
-          let currentImage = `${config.rootPath}/public/uploads/${player?.avatar}`;
-          if (fs.existsSync(currentImage)) {
-            fs.unlinkSync(currentImage);
-          }
-
-          await Player.findOneAndUpdate(
-            { _id: player._id },
-            { ...payload, avatar: filename }
-          );
-
-          res.status(201).json({
-            data: {
-              id: player.id,
-              name: player.name,
-              phoneNumber: player.phoneNumber,
-              avatar: filename,
-            },
-          });
+        res.status(201).json({
+          data: {
+            id: player.id,
+            name: player.name,
+            phoneNumber: player.phoneNumber,
+            avatar: player.avatar,
+          },
         });
-        src.on("err", async () => {});
       } else {
         const player = await Player.findByIdAndUpdate(
           {
@@ -309,13 +301,14 @@ module.exports = {
         });
       }
     } catch (error) {
-      if (err && err.name === "ValidationErro") {
+      if (error && error.name === "ValidationError") {
         res.status(422).json({
           error: 1,
           message: error.message || "Internal Server Error",
           fields: err?.errors,
         });
       }
+      console.log(error);
 
       res
         .status(500)

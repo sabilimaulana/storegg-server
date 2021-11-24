@@ -1,59 +1,37 @@
 const Player = require("../player/model");
-const path = require("path");
-const fs = require("fs");
 const config = require("../../config");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const cloudinary = require("../utils/cloudinary");
 
 module.exports = {
   signup: async (req, res) => {
     try {
       const payload = req.body;
 
-      if (req.file) {
-        let tmp_path = req.file.path;
-        let originalExt =
-          req.file.originalname.split(".")[
-            req.file.originalname.split(".").length - 1
-          ];
-        let filename = req.file.filename + "." + originalExt;
-        let target_path = path.resolve(
-          config.rootPath,
-          `public/uploads/${filename}`
-        );
-
-        const src = fs.createReadStream(tmp_path);
-        const dest = fs.createWriteStream(target_path);
-
-        src.pipe(dest);
-
-        src.on("end", async () => {
-          try {
-            const player = new Player({
-              ...payload,
-              avatar: filename,
-            });
-
-            await player.save();
-
-            delete player._doc.password;
-
-            return res.status(201).json({ data: player });
-          } catch (error) {
-            if (error && error?.name === "ValidationError") {
-              return res.status(422).json({
-                error: 1,
-                message: error?.message,
-                fields: error?.errors,
-              });
-            } else {
-              res
-                .status(500)
-                .json({ message: error.message || "Internal Server Error" });
-            }
-            console.log(error);
-          }
+      const player = await Player.findOne({ email: payload.email });
+      if (player) {
+        return res.status(422).json({
+          error: 1,
+          message: "Email sudah terdaftar",
+          fields: "email",
         });
+      }
+
+      if (req.file) {
+        const cloudinaryRes = await cloudinary.uploader.upload(req.file.path);
+
+        const player = new Player({
+          ...payload,
+          avatar: cloudinaryRes.secure_url,
+          avatarPublicId: cloudinaryRes.public_id,
+        });
+
+        await player.save();
+
+        delete player._doc.password;
+
+        return res.status(201).json({ data: player });
       } else {
         let player = new Player(payload);
 
