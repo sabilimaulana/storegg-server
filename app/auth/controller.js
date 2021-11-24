@@ -18,29 +18,38 @@ module.exports = {
         });
       }
 
+      let player;
+
       if (req.file) {
         const cloudinaryRes = await cloudinary.uploader.upload(req.file.path);
 
-        const player = new Player({
+        player = new Player({
           ...payload,
           avatar: cloudinaryRes.secure_url,
           avatarPublicId: cloudinaryRes.public_id,
         });
-
-        await player.save();
-
-        delete player._doc.password;
-
-        return res.status(201).json({ data: player });
       } else {
-        let player = new Player(payload);
-
-        await player.save();
-
-        delete player._doc.password;
-
-        return res.status(201).json({ data: player });
+        player = new Player(payload);
       }
+
+      await player.save();
+      delete player._doc.password;
+
+      const token = jwt.sign(
+        {
+          player: {
+            id: player.id,
+            username: player.username,
+            email: player.email,
+            name: player.name,
+            phoneNumber: player.phoneNumber,
+            avatar: player.avatar,
+          },
+        },
+        config.jwtKey
+      );
+
+      res.status(200).json({ data: { token } });
     } catch (error) {
       if (error && error?.name === "ValidationError") {
         return res
