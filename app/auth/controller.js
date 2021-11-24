@@ -9,8 +9,8 @@ module.exports = {
     try {
       const payload = req.body;
 
-      const player = await Player.findOne({ email: payload.email });
-      if (player) {
+      const existingPlayer = await Player.findOne({ email: payload.email });
+      if (existingPlayer) {
         return res.status(422).json({
           error: 1,
           message: "Email sudah terdaftar",
