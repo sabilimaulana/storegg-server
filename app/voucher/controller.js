@@ -53,7 +53,9 @@ module.exports = {
       const { name, category, nominals } = req.body;
 
       if (req.file) {
-        const cloudinaryRes = await cloudinary.uploader.upload(req.file.path);
+        const cloudinaryRes = await cloudinary.uploader.upload(req.file.path, {
+          folder: "store-gg",
+        });
 
         const voucher = new Voucher({
           name,
@@ -121,7 +123,9 @@ module.exports = {
           await cloudinary.uploader.destroy(voucher.thumbnailPublicId);
         }
 
-        const cloudinaryRes = await cloudinary.uploader.upload(req.file.path);
+        const cloudinaryRes = await cloudinary.uploader.upload(req.file.path, {
+          folder: "store-gg",
+        });
 
         await Voucher.findOneAndUpdate(
           { _id: id },

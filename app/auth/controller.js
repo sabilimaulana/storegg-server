@@ -21,7 +21,9 @@ module.exports = {
       let player;
 
       if (req.file) {
-        const cloudinaryRes = await cloudinary.uploader.upload(req.file.path);
+        const cloudinaryRes = await cloudinary.uploader.upload(req.file.path, {
+          folder: "store-gg",
+        });
 
         player = new Player({
           ...payload,

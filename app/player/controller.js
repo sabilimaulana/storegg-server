@@ -261,7 +261,9 @@ module.exports = {
           await cloudinary.uploader.destroy(oldPlayer.avatarPublicId);
         }
 
-        const cloudinaryRes = await cloudinary.uploader.upload(req.file.path);
+        const cloudinaryRes = await cloudinary.uploader.upload(req.file.path, {
+          folder: "store-gg",
+        });
 
         await Player.findOneAndUpdate(
           { _id: oldPlayer._id },
