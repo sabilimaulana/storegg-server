@@ -160,7 +160,7 @@ module.exports = {
 
       res
         .status(201)
-        .json({ data: history, total: total.length ? total[0].value : 0 });
+        .json({ data: { history, total: total.length ? total[0].value : 0 } });
     } catch (error) {
       res
         .status(500)
@@ -310,7 +310,6 @@ module.exports = {
           fields: err?.errors,
         });
       }
-      console.log(error);
 
       res
         .status(500)
